@@ -1,43 +1,74 @@
 <!doctype html>
-<html>
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Fluffy Website</title>
-  <link rel="stylesheet" href="styles.css" />
-</head>
-<body>
-<header>
-  <nav>
-    <a href="/index.html">Home</a><a href="/store.html">Store</a><a href="/shop.html">Shop</a><a href="/vip.html">VIP</a><a href="/admin.html">Admin</a>
-  </nav>
-  <div><span id="coinBalance">Coins: 0</span> <button id="loginBtn">Login</button></div>
-</header>
-<main>
-  <h1>Fluffy Website</h1>
-  <div class="card">
-    <h2>Embed Codes:</h2>
-    <p><strong>Embed 1:</strong></p>
-    <div style="position: relative; width: 100%; height: 0; padding-top: 133.3333%; padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden; border-radius: 8px; will-change: transform;">
-      <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;" src="https://www.canva.com/design/DAHDAg7zQJY/EMOIotft1hdBbtobkkbFfg/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen"></iframe>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fluffy Website</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="store.html">Store</a>
+        <a href="shop.html">Shop</a>
+        <a href="vip.html">VIP</a>
+        <a href="admin.html">Admin</a>
+      </nav>
+      <div class="header-actions">
+        <span id="coinBalance">Coins: 0</span>
+        <button id="loginBtn">Login</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="card hero-card">
+        <h1>Fluffy Website</h1>
+        <p class="notice">Embed codes appear right under the title.</p>
+      </section>
+
+      <section class="card">
+        <h2>Embed Codes</h2>
+        <p><strong>Embed 1</strong></p>
+        <div class="embed-wrap">
+          <iframe
+            loading="lazy"
+            src="https://www.canva.com/design/DAHDAg7zQJY/EMOIotft1hdBbtobkkbFfg/view?embed"
+            allowfullscreen="allowfullscreen"
+            allow="fullscreen"
+          ></iframe>
+        </div>
+        <a
+          href="https://www.canva.com/design/DAHDAg7zQJY/EMOIotft1hdBbtobkkbFfg/view?utm_content=DAHDAg7zQJY&utm_campaign=designshare&utm_medium=embeds&utm_source=link"
+          target="_blank"
+          rel="noopener"
+        >
+          Open Canva design
+        </a>
+      </section>
+    </main>
+
+    <div id="accountBadge"></div>
+    <div class="modal" id="loginModal">
+      <div class="card modal-card">
+        <h3>Login / Sign up</h3>
+        <button id="googleLoginBtn">Login with Google</button>
+        <p class="notice">(Demo mode) Google login uses prompts.</p>
+
+        <h4>Email + Password Login</h4>
+        <input id="loginEmail" placeholder="Email" />
+        <input id="loginPassword" type="password" placeholder="Password" />
+        <button id="loginSubmitBtn">Login</button>
+
+        <h4>Create Account</h4>
+        <input id="signupName" placeholder="Display name" />
+        <input id="signupEmail" placeholder="Email" />
+        <input id="signupPassword" type="password" placeholder="Password" />
+        <button id="signupBtn" class="secondary">Sign up</button>
+        <p id="loginMessage"></p>
+      </div>
     </div>
-    <a href="https://www.canva.com/design/DAHDAg7zQJY/EMOIotft1hdBbtobkkbFfg/view?utm_content=DAHDAg7zQJY&amp;utm_campaign=designshare&amp;utm_medium=embeds&amp;utm_source=link" target="_blank" rel="noopener">Open Canva design</a>
-  </div>
-</main>
-<div id="accountBadge"></div>
-<div class="modal" id="loginModal">
-  <div class="card">
-    <h3>Login / Sign up</h3>
-    <button id="googleLoginBtn">Login with Google</button>
-    <p class="notice">or login with email/password</p>
-    <input id="loginEmail" placeholder="Email" /><input id="loginPassword" type="password" placeholder="Password" />
-    <button id="loginSubmitBtn">Login</button>
-    <hr>
-    <input id="signupName" placeholder="Name" /><input id="signupEmail" placeholder="Email" /><input id="signupPassword" type="password" placeholder="Password" />
-    <button id="signupBtn" class="secondary">Sign up</button>
-    <p id="loginMessage"></p>
-  </div>
-</div>
-<script src="app.js"></script>
-</body>
+
+    <script src="app.js"></script>
+  </body>
 </html>

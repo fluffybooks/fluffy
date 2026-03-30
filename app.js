@@ -4,64 +4,169 @@ const STORAGE_KEYS = {
   orders: 'fluffy_orders',
   vipAccess: 'fluffy_vip_access'
 };
-const ADMIN_CREDENTIALS = { email: 'fluffy.admin@fluffy.com', password: 'Fluffy26!' };
-const VIP_CODES = ['FLUFFY', 'FLUFFY67', 'FLUFFYAURA', 'AURAISFLUFFY'];
 
-const read = (k, fallback) => JSON.parse(localStorage.getItem(k) || JSON.stringify(fallback));
-const write = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+const ADMIN_CREDENTIALS = {
+  email: 'fluffy.admin@fluffy.com',
+  password: 'Fluffy26!'
+};
 
-function getUsers() { return read(STORAGE_KEYS.users, {}); }
-function setUsers(users) { write(STORAGE_KEYS.users, users); }
-function getSession() { return read(STORAGE_KEYS.session, null); }
-function setSession(s) { write(STORAGE_KEYS.session, s); }
-function getOrders() { return read(STORAGE_KEYS.orders, []); }
-function setOrders(o) { write(STORAGE_KEYS.orders, o); }
-function getVipAccess() { return read(STORAGE_KEYS.vipAccess, {}); }
-function setVipAccess(v) { write(STORAGE_KEYS.vipAccess, v); }
+const VIP_TEXT_CODES = ['FLUFFY', 'FLUFFY67', 'FLUFFYAURA', 'AURAISFLUFFY'];
+const VIP_NUMERIC_CODES = ['260426', '777777', '135790'];
 
-function today() { return new Date().toISOString().slice(0, 10); }
+const read = (key, fallback) => JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback));
+const write = (key, value) => localStorage.setItem(key, JSON.stringify(value));
 
-function ensureDailyCoins(user) {
-  if (user.lastCoinDate !== today()) {
-    user.coins = (user.coins || 0) + 15;
-    user.lastCoinDate = today();
-  }
+const getUsers = () => read(STORAGE_KEYS.users, {});
+const setUsers = (users) => write(STORAGE_KEYS.users, users);
+const getSession = () => read(STORAGE_KEYS.session, null);
+const setSession = (session) => write(STORAGE_KEYS.session, session);
+const getOrders = () => read(STORAGE_KEYS.orders, []);
+const setOrders = (orders) => write(STORAGE_KEYS.orders, orders);
+const getVipAccess = () => read(STORAGE_KEYS.vipAccess, {});
+const setVipAccess = (vipAccess) => write(STORAGE_KEYS.vipAccess, vipAccess);
+
+function todayString() {
+  return new Date().toISOString().slice(0, 10);
 }
 
-function saveCurrentUser(updatedUser) {
-  const users = getUsers();
-  users[updatedUser.email] = updatedUser;
-  setUsers(users);
-  setSession({ email: updatedUser.email });
-}
-
-function currentUser() {
+function getCurrentUser() {
   const session = getSession();
-  if (!session) return null;
+  if (!session?.email) return null;
   const users = getUsers();
   return users[session.email] || null;
 }
 
-function renderGlobalUI() {
-  const user = currentUser();
-  const badge = document.getElementById('accountBadge');
-  const coin = document.getElementById('coinBalance');
-  if (!badge || !coin) return;
+function saveUser(user) {
+  const users = getUsers();
+  users[user.email] = user;
+  setUsers(users);
+  setSession({ email: user.email });
+}
 
-  if (user) {
-    ensureDailyCoins(user);
-    saveCurrentUser(user);
-    badge.innerHTML = `<strong>${user.name}</strong><br><small>${user.email}</small><br><button class="secondary" id="logoutBtn">Log out</button>`;
-    coin.textContent = `Coins: ${user.coins}`;
-    const logout = document.getElementById('logoutBtn');
-    logout?.addEventListener('click', () => {
-      localStorage.removeItem(STORAGE_KEYS.session);
-      location.reload();
-    });
-  } else {
-    badge.innerHTML = '<strong>Not logged in</strong>';
-    coin.textContent = 'Coins: 0';
+function ensureDailyReward(user) {
+  if (user.lastCoinDate !== todayString()) {
+    user.coins = (user.coins || 0) + 15;
+    user.lastCoinDate = todayString();
+    saveUser(user);
   }
+}
+
+function updateGlobalUserUI() {
+  const coinEl = document.getElementById('coinBalance');
+  const badge = document.getElementById('accountBadge');
+  const user = getCurrentUser();
+
+  if (!coinEl || !badge) return;
+
+  if (!user) {
+    coinEl.textContent = 'Coins: 0';
+    badge.innerHTML = '<strong>Not logged in</strong>';
+    return;
+  }
+
+  ensureDailyReward(user);
+  const refreshed = getCurrentUser();
+  coinEl.textContent = `Coins: ${refreshed.coins || 0}`;
+  badge.innerHTML = `
+    <div><strong>${refreshed.name}</strong></div>
+    <div class="notice">${refreshed.email}</div>
+    <button class="secondary" id="logoutBtn">Log out</button>
+  `;
+
+  document.getElementById('logoutBtn')?.addEventListener('click', () => {
+    localStorage.removeItem(STORAGE_KEYS.session);
+    location.reload();
+  });
+}
+
+function openLoginModal() {
+  const modal = document.getElementById('loginModal');
+  if (modal) modal.style.display = 'flex';
+}
+
+function closeLoginModal() {
+  const modal = document.getElementById('loginModal');
+  if (modal) modal.style.display = 'none';
+}
+
+function showMessage(id, text, className) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = text;
+  el.className = className;
+}
+
+function initializeLogin() {
+  const loginBtn = document.getElementById('loginBtn');
+  const modal = document.getElementById('loginModal');
+
+  loginBtn?.addEventListener('click', openLoginModal);
+  modal?.addEventListener('click', (event) => {
+    if (event.target === modal) closeLoginModal();
+  });
+
+  document.getElementById('googleLoginBtn')?.addEventListener('click', () => {
+    const email = (prompt('Google email:') || '').trim().toLowerCase();
+    if (!email) return;
+
+    const users = getUsers();
+    if (!users[email]) {
+      const name = (prompt('Choose display name:') || email.split('@')[0]).trim();
+      users[email] = { email, name, password: null, coins: 0, lastCoinDate: null };
+      setUsers(users);
+    }
+
+    setSession({ email });
+    closeLoginModal();
+    location.reload();
+  });
+
+  document.getElementById('loginSubmitBtn')?.addEventListener('click', () => {
+    const email = (document.getElementById('loginEmail')?.value || '').trim().toLowerCase();
+    const password = document.getElementById('loginPassword')?.value || '';
+    const users = getUsers();
+
+    if (!users[email] || users[email].password !== password) {
+      showMessage('loginMessage', 'Invalid credentials.', 'error');
+      return;
+    }
+
+    setSession({ email });
+    closeLoginModal();
+    location.reload();
+  });
+
+  document.getElementById('signupBtn')?.addEventListener('click', () => {
+    const name = (document.getElementById('signupName')?.value || '').trim();
+    const email = (document.getElementById('signupEmail')?.value || '').trim().toLowerCase();
+    const password = document.getElementById('signupPassword')?.value || '';
+
+    if (!name || !email || !password) {
+      showMessage('loginMessage', 'Fill all sign-up fields.', 'error');
+      return;
+    }
+
+    const users = getUsers();
+    users[email] = { name, email, password, coins: 0, lastCoinDate: null };
+    setUsers(users);
+    setSession({ email });
+    closeLoginModal();
+    location.reload();
+  });
+}
+
+function spendCoins(amount) {
+  const user = getCurrentUser();
+  if (!user) return { ok: false, message: 'Please log in first.' };
+
+  ensureDailyReward(user);
+  const refreshed = getCurrentUser();
+  if ((refreshed.coins || 0) < amount) return { ok: false, message: 'insufficient funds' };
+
+  refreshed.coins -= amount;
+  saveUser(refreshed);
+  updateGlobalUserUI();
+  return { ok: true };
 }
 
 function addOrder(order) {
@@ -70,190 +175,139 @@ function addOrder(order) {
   setOrders(orders);
 }
 
-function spendCoins(amount) {
-  const user = currentUser();
-  if (!user) return { ok: false, msg: 'Please log in first.' };
-  ensureDailyCoins(user);
-  if ((user.coins || 0) < amount) return { ok: false, msg: 'insufficient funds' };
-  user.coins -= amount;
-  saveCurrentUser(user);
-  renderGlobalUI();
-  return { ok: true };
-}
+function initializePurchases() {
+  document.querySelectorAll('[data-buy]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const name = (document.getElementById('buyerName')?.value || '').trim();
+      const email = (document.getElementById('buyerEmail')?.value || '').trim().toLowerCase();
+      const product = button.dataset.product;
+      const cost = Number(button.dataset.cost || 0);
 
-function initLoginModal() {
-  const btn = document.getElementById('loginBtn');
-  const modal = document.getElementById('loginModal');
-  if (!btn || !modal) return;
-
-  btn.addEventListener('click', () => {
-    modal.style.display = 'flex';
-    document.getElementById('loginMessage').textContent = '';
-  });
-  modal.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
-
-  document.getElementById('googleLoginBtn')?.addEventListener('click', () => {
-    const email = prompt('Google email:');
-    if (!email) return;
-    const name = prompt('Choose display name:') || email.split('@')[0];
-    const users = getUsers();
-    if (!users[email]) users[email] = { email, name, password: null, coins: 0, lastCoinDate: null };
-    setUsers(users);
-    setSession({ email });
-    modal.style.display = 'none';
-    location.reload();
-  });
-
-  document.getElementById('loginSubmitBtn')?.addEventListener('click', () => {
-    const email = document.getElementById('loginEmail').value.trim();
-    const password = document.getElementById('loginPassword').value;
-    const msg = document.getElementById('loginMessage');
-    const users = getUsers();
-    if (!users[email] || users[email].password !== password) {
-      msg.textContent = 'Invalid credentials.';
-      msg.className = 'error';
-      return;
-    }
-    setSession({ email });
-    location.reload();
-  });
-
-  document.getElementById('signupBtn')?.addEventListener('click', () => {
-    const name = document.getElementById('signupName').value.trim();
-    const email = document.getElementById('signupEmail').value.trim();
-    const password = document.getElementById('signupPassword').value;
-    const msg = document.getElementById('loginMessage');
-    if (!name || !email || !password) {
-      msg.textContent = 'Fill all sign-up fields.';
-      msg.className = 'error';
-      return;
-    }
-    const users = getUsers();
-    users[email] = { name, email, password, coins: 0, lastCoinDate: null };
-    setUsers(users);
-    setSession({ email });
-    location.reload();
-  });
-}
-
-function initPurchaseButtons() {
-  document.querySelectorAll('[data-buy]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const product = btn.dataset.product;
-      const cost = Number(btn.dataset.cost);
-      const nameInput = document.getElementById('buyerName');
-      const emailInput = document.getElementById('buyerEmail');
-      const status = document.getElementById('purchaseStatus');
-      const name = nameInput?.value.trim();
-      const email = emailInput?.value.trim();
       if (!name || !email) {
-        status.textContent = 'Please enter name and email.';
-        status.className = 'error';
+        showMessage('purchaseStatus', 'Please enter name and email.', 'error');
         return;
       }
-      const pay = spendCoins(cost);
-      if (!pay.ok) {
-        status.textContent = pay.msg;
-        status.className = 'error';
+
+      const paid = spendCoins(cost);
+      if (!paid.ok) {
+        showMessage('purchaseStatus', paid.message, 'error');
         return;
       }
-      addOrder({ product, name, email, cost });
-      if (product === 'VIP') {
-        const access = getVipAccess();
-        access[email] = true;
-        setVipAccess(access);
-      }
-      status.textContent = `${product} purchased successfully!`;
-      status.className = 'success';
+
+      addOrder({ name, email, product, cost });
+      showMessage('purchaseStatus', `${product} purchased successfully!`, 'success');
     });
   });
 }
 
-function initVipGate() {
+function isValidVipCode(code) {
+  const clean = code.trim().toUpperCase();
+  if (VIP_TEXT_CODES.includes(clean)) return true;
+  if (/^\d{6}$/.test(clean) && VIP_NUMERIC_CODES.includes(clean)) return true;
+  return false;
+}
+
+function initializeVipPage() {
   const gate = document.getElementById('vipGate');
   const content = document.getElementById('vipContent');
   if (!gate || !content) return;
-  const user = currentUser();
+
+  const user = getCurrentUser();
   if (!user) {
-    gate.innerHTML = '<p class="error">Please log in first.</p>';
+    gate.innerHTML = '<p class="error">Please log in first to access VIP.</p>';
     return;
   }
-  const access = getVipAccess();
-  if (access[user.email]) {
+
+  const vipAccess = getVipAccess();
+  if (vipAccess[user.email]) {
     gate.style.display = 'none';
     content.style.display = 'block';
     return;
   }
+
   document.getElementById('vipUnlockBtn')?.addEventListener('click', () => {
-    const code = document.getElementById('vipCode').value.trim().toUpperCase();
-    const msg = document.getElementById('vipMessage');
-    if (!VIP_CODES.includes(code)) {
-      msg.textContent = 'Invalid code.';
-      msg.className = 'error';
+    const enteredCode = document.getElementById('vipCode')?.value || '';
+    if (!isValidVipCode(enteredCode)) {
+      showMessage('vipMessage', 'Invalid code.', 'error');
       return;
     }
-    access[user.email] = true;
-    setVipAccess(access);
+
+    vipAccess[user.email] = true;
+    setVipAccess(vipAccess);
     gate.style.display = 'none';
     content.style.display = 'block';
-  });
-}
-
-function initAdmin() {
-  const loginCard = document.getElementById('adminLogin');
-  const portal = document.getElementById('adminPortal');
-  if (!loginCard || !portal) return;
-
-  document.getElementById('adminLoginBtn')?.addEventListener('click', () => {
-    const email = document.getElementById('adminEmail').value.trim();
-    const password = document.getElementById('adminPassword').value;
-    const msg = document.getElementById('adminMsg');
-    if (email !== ADMIN_CREDENTIALS.email || password !== ADMIN_CREDENTIALS.password) {
-      msg.textContent = 'Invalid admin credentials';
-      msg.className = 'error';
-      return;
-    }
-    loginCard.style.display = 'none';
-    portal.style.display = 'block';
-    renderOrders();
-  });
-
-  document.getElementById('addCoinsBtn')?.addEventListener('click', () => {
-    const email = document.getElementById('coinEmail').value.trim();
-    const amt = Number(document.getElementById('coinAmount').value);
-    const msg = document.getElementById('coinMsg');
-    const users = getUsers();
-    if (!users[email]) {
-      msg.textContent = 'User not found.';
-      msg.className = 'error';
-      return;
-    }
-    users[email].coins = (users[email].coins || 0) + amt;
-    setUsers(users);
-    msg.textContent = `Added ${amt} coins to ${email}.`;
-    msg.className = 'success';
   });
 }
 
 function renderOrders() {
   const body = document.getElementById('ordersBody');
   if (!body) return;
-  const orders = getOrders();
-  body.innerHTML = orders.map((o) => `
-    <tr>
-      <td>${new Date(o.date).toLocaleString()}</td>
-      <td>${o.product}</td>
-      <td>${o.name}</td>
-      <td>${o.email}</td>
-      <td>${o.cost}</td>
-    </tr>
-  `).join('') || '<tr><td colspan="5">No orders yet.</td></tr>';
+
+  const rows = getOrders();
+  if (!rows.length) {
+    body.innerHTML = '<tr><td colspan="5">No orders yet.</td></tr>';
+    return;
+  }
+
+  body.innerHTML = rows
+    .map(
+      (order) => `
+      <tr>
+        <td>${new Date(order.date).toLocaleString()}</td>
+        <td>${order.product}</td>
+        <td>${order.name}</td>
+        <td>${order.email}</td>
+        <td>${order.cost}</td>
+      </tr>
+    `
+    )
+    .join('');
+}
+
+function initializeAdminPage() {
+  const loginSection = document.getElementById('adminLogin');
+  const portalSection = document.getElementById('adminPortal');
+  if (!loginSection || !portalSection) return;
+
+  document.getElementById('adminLoginBtn')?.addEventListener('click', () => {
+    const email = (document.getElementById('adminEmail')?.value || '').trim().toLowerCase();
+    const password = document.getElementById('adminPassword')?.value || '';
+
+    if (email !== ADMIN_CREDENTIALS.email || password !== ADMIN_CREDENTIALS.password) {
+      showMessage('adminMsg', 'Invalid admin credentials.', 'error');
+      return;
+    }
+
+    loginSection.style.display = 'none';
+    portalSection.style.display = 'block';
+    renderOrders();
+  });
+
+  document.getElementById('addCoinsBtn')?.addEventListener('click', () => {
+    const email = (document.getElementById('coinEmail')?.value || '').trim().toLowerCase();
+    const amount = Number(document.getElementById('coinAmount')?.value || 0);
+    const users = getUsers();
+
+    if (!users[email]) {
+      showMessage('coinMsg', 'User not found.', 'error');
+      return;
+    }
+    if (!Number.isFinite(amount) || amount <= 0) {
+      showMessage('coinMsg', 'Enter a valid amount.', 'error');
+      return;
+    }
+
+    users[email].coins = (users[email].coins || 0) + amount;
+    setUsers(users);
+    showMessage('coinMsg', `Added ${amount} coins to ${email}.`, 'success');
+    updateGlobalUserUI();
+  });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  renderGlobalUI();
-  initLoginModal();
-  initPurchaseButtons();
-  initVipGate();
-  initAdmin();
+  updateGlobalUserUI();
+  initializeLogin();
+  initializePurchases();
+  initializeVipPage();
+  initializeAdminPage();
 });
