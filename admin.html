@@ -1,0 +1,28 @@
+<!doctype html><html><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>Admin</title><link rel="stylesheet" href="styles.css"/></head><body>
+<header><nav><a href="/index.html">Home</a><a href="/store.html">Store</a><a href="/shop.html">Shop</a><a href="/vip.html">VIP</a><a href="/admin.html">Admin</a></nav><div><span id="coinBalance">Coins: 0</span> <button id="loginBtn">Login</button></div></header>
+<main>
+  <h1>Admin</h1>
+  <div id="adminLogin" class="card">
+    <p>Login required for admin portal.</p>
+    <input id="adminEmail" placeholder="Admin email" />
+    <input id="adminPassword" type="password" placeholder="Admin password" />
+    <button id="adminLoginBtn">Login</button>
+    <p id="adminMsg"></p>
+  </div>
+  <div id="adminPortal" style="display:none;">
+    <div class="card">
+      <h3>Orders</h3>
+      <table class="table"><thead><tr><th>Date</th><th>Product</th><th>Name</th><th>Email</th><th>Coins</th></tr></thead><tbody id="ordersBody"></tbody></table>
+    </div>
+    <div class="card">
+      <h3>Add coins to user</h3>
+      <input id="coinEmail" placeholder="User email" />
+      <input id="coinAmount" type="number" placeholder="Amount" />
+      <button id="addCoinsBtn">Add Coins</button>
+      <p id="coinMsg"></p>
+    </div>
+  </div>
+</main>
+<div id="accountBadge"></div>
+<div class="modal" id="loginModal"><div class="card"><h3>Login / Sign up</h3><button id="googleLoginBtn">Login with Google</button><p class="notice">or login with email/password</p><input id="loginEmail" placeholder="Email"/><input id="loginPassword" type="password" placeholder="Password"/><button id="loginSubmitBtn">Login</button><hr><input id="signupName" placeholder="Name"/><input id="signupEmail" placeholder="Email"/><input id="signupPassword" type="password" placeholder="Password"/><button id="signupBtn" class="secondary">Sign up</button><p id="loginMessage"></p></div></div>
+<script src="app.js"></script></body></html>

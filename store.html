@@ -1,0 +1,14 @@
+<!doctype html><html><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>Store</title><link rel="stylesheet" href="styles.css"/></head><body>
+<header><nav><a href="/index.html">Home</a><a href="/store.html">Store</a><a href="/shop.html">Shop</a><a href="/vip.html">VIP</a><a href="/admin.html">Admin</a></nav><div><span id="coinBalance">Coins: 0</span> <button id="loginBtn">Login</button></div></header>
+<main>
+  <h1>Store</h1>
+  <div class="card">
+    <h3>Exclusive 10-20 Page Book (125 coins)</h3>
+    <div class="row"><div><label>Name</label><input id="buyerName"/></div><div><label>Email</label><input id="buyerEmail"/></div></div>
+    <button data-buy data-product="Exclusive Book" data-cost="125">Buy Book (125 coins)</button>
+    <p id="purchaseStatus"></p>
+  </div>
+</main>
+<div id="accountBadge"></div>
+<div class="modal" id="loginModal"><div class="card"><h3>Login / Sign up</h3><button id="googleLoginBtn">Login with Google</button><p class="notice">or login with email/password</p><input id="loginEmail" placeholder="Email"/><input id="loginPassword" type="password" placeholder="Password"/><button id="loginSubmitBtn">Login</button><hr><input id="signupName" placeholder="Name"/><input id="signupEmail" placeholder="Email"/><input id="signupPassword" type="password" placeholder="Password"/><button id="signupBtn" class="secondary">Sign up</button><p id="loginMessage"></p></div></div>
+<script src="app.js"></script></body></html>
