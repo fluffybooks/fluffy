@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fluffy Website</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="store.html">Store</a>
+        <a href="shop.html">Shop</a>
+        <a href="vip.html">VIP</a>
+        <a href="admin.html">Admin</a>
+      </nav>
+      <div class="header-actions">
+        <span id="coinBalance">Coins: 0</span>
+        <button id="loginBtn">Login</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="card hero-card">
+        <h1>Fluffy Website</h1>
+        <p class="notice">Embed codes appear right under the title.</p>
+      </section>
+
+      <section class="card">
+        <h2>Embed Codes</h2>
+        <p><strong>Embed 1</strong></p>
+        <div class="embed-wrap">
+          <iframe
+            loading="lazy"
+            src="https://www.canva.com/design/DAHDAg7zQJY/EMOIotft1hdBbtobkkbFfg/view?embed"
+            allowfullscreen="allowfullscreen"
+            allow="fullscreen"
+          ></iframe>
+        </div>
+        <a
+          href="https://www.canva.com/design/DAHDAg7zQJY/EMOIotft1hdBbtobkkbFfg/view?utm_content=DAHDAg7zQJY&utm_campaign=designshare&utm_medium=embeds&utm_source=link"
+          target="_blank"
+          rel="noopener"
+        >
+          Open Canva design
+        </a>
+      </section>
+    </main>
+
+    <div id="accountBadge"></div>
+    <div class="modal" id="loginModal">
+      <div class="card modal-card">
+        <h3>Login / Sign up</h3>
+        <button id="googleLoginBtn">Login with Google</button>
+        <p class="notice">(Demo mode) Google login uses prompts.</p>
+
+        <h4>Email + Password Login</h4>
+        <input id="loginEmail" placeholder="Email" />
+        <input id="loginPassword" type="password" placeholder="Password" />
+        <button id="loginSubmitBtn">Login</button>
+
+        <h4>Create Account</h4>
+        <input id="signupName" placeholder="Display name" />
+        <input id="signupEmail" placeholder="Email" />
+        <input id="signupPassword" type="password" placeholder="Password" />
+        <button id="signupBtn" class="secondary">Sign up</button>
+        <p id="loginMessage"></p>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
