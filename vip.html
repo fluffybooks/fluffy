@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fluffy VIP</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="store.html">Store</a>
+        <a href="shop.html">Shop</a>
+        <a href="vip.html">VIP</a>
+        <a href="admin.html">Admin</a>
+      </nav>
+      <div class="header-actions">
+        <span id="coinBalance">Coins: 0</span>
+        <button id="loginBtn">Login</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="card" id="vipGate">
+        <h1>VIP Access Check</h1>
+        <p>Enter a valid code to open the VIP page. After first success, we remember you.</p>
+        <input id="vipCode" placeholder="Enter VIP code" />
+        <button id="vipUnlockBtn">Unlock VIP</button>
+        <p class="notice">Valid text codes include: FLUFFY, FLUFFY67, FLUFFYAURA, AURAISFLUFFY.</p>
+        <p id="vipMessage"></p>
+      </section>
+
+      <section class="card" id="vipContent" style="display: none">
+        <h2>Welcome to the VIP page</h2>
+        <p>You are now verified and allowed into VIP.</p>
+      </section>
+    </main>
+
+    <div id="accountBadge"></div>
+    <div class="modal" id="loginModal">
+      <div class="card modal-card">
+        <h3>Login / Sign up</h3>
+        <button id="googleLoginBtn">Login with Google</button>
+        <p class="notice">(Demo mode) Google login uses prompts.</p>
+        <input id="loginEmail" placeholder="Email" />
+        <input id="loginPassword" type="password" placeholder="Password" />
+        <button id="loginSubmitBtn">Login</button>
+        <input id="signupName" placeholder="Display name" />
+        <input id="signupEmail" placeholder="Email" />
+        <input id="signupPassword" type="password" placeholder="Password" />
+        <button id="signupBtn" class="secondary">Sign up</button>
+        <p id="loginMessage"></p>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
